@@ -92,6 +92,7 @@ public class Application implements IApplication {
        */
       LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
       for (String tag : quote.getTags()) {
+        storeQuote(quote, tag);
         LOG.info("> " + tag);
       }
     }
@@ -123,7 +124,10 @@ public class Application implements IApplication {
    * @throws IOException 
    */
   void storeQuote(Quote quote, String filename) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    //throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    for(String tag : quote.getTags()){
+
+    }
   }
   
   /**
