@@ -125,9 +125,17 @@ public class Application implements IApplication {
    */
   void storeQuote(Quote quote, String filename) throws IOException {
     //throw new UnsupportedOperationException("The student has not implemented this method yet.");
-    for(String tag : quote.getTags()){
+    String path = WORKSPACE_DIRECTORY + "/";
 
+    for(String tag : quote.getTags()){
+      path += tag + "/";
+      System.out.println(path);
+      new File(path).mkdirs();
     }
+    System.out.println("Test:"+ path + filename);
+
+    new File(path + filename + ".txt").createNewFile();
+    System.out.println("fafaf");
   }
   
   /**
