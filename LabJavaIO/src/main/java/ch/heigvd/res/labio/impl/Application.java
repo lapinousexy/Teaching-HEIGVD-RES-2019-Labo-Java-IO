@@ -85,17 +85,12 @@ public class Application implements IApplication {
         QuoteClient client = new QuoteClient();
         for (int i = 0; i < numberOfQuotes; i++) {
             Quote quote = client.fetchQuote();
-            /* There is a missing piece here!
-             * As you can see, this method handles the first part of the lab. It uses the web service
-             * client to fetch quotes. We have removed a single line from this method. It is a call to
-             * one method provided by this class, which is responsible for storing the content of the
-             * quote in a text file (and for generating the directories based on the tags).
-             */
+
             LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
             for (String tag : quote.getTags()) {
                 LOG.info("> " + tag);
             }
-            storeQuote(quote, "quote-"+ (i+1) +".utf8");
+            storeQuote(quote, "quote-" + (i + 1) + ".utf8");
 
         }
     }
@@ -128,6 +123,7 @@ public class Application implements IApplication {
     void storeQuote(Quote quote, String filename) throws IOException {
         try {
             String path = WORKSPACE_DIRECTORY + "/";
+            new File(path).mkdirs();
 
             for (String tag : quote.getTags()) {
                 path += tag + "/";
@@ -137,6 +133,8 @@ public class Application implements IApplication {
             new File(path + filename).createNewFile();
         } catch (IOException e) {
             System.out.println(e);
+
+            throw new IOException();
         }
 
     }
@@ -150,19 +148,17 @@ public class Application implements IApplication {
         explorer.explore(new File(WORKSPACE_DIRECTORY), new IFileVisitor() {
             @Override
             public void visit(File file) {
-                /*
-                 * There is a missing piece here. Notice how we use an anonymous class here. We provide the implementation
-                 * of the the IFileVisitor interface inline. You just have to add the body of the visit method, which should
-                 * be pretty easy (we want to write the filename, including the path, to the writer passed in argument).
-                 */
+
                 try {
                     writer.write(file.getPath() + "\n");
                     writer.flush();
+                    writer.close();
                 } catch (IOException e) {
                     System.out.println(e);
                 }
             }
         });
+
     }
 
     @Override
