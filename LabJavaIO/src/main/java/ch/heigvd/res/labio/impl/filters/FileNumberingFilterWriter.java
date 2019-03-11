@@ -22,7 +22,6 @@ public class FileNumberingFilterWriter extends FilterWriter {
     private static final Logger LOG = Logger.getLogger(FileNumberingFilterWriter.class.getName());
     private int j = 1;
     boolean charBeforeWasCtrl = false;
-    private int i = 0;
 
     public FileNumberingFilterWriter(Writer out) {
         super(out);
@@ -30,14 +29,6 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
     @Override
     public void write(String str, int off, int len) throws IOException {
-        String line = "This is line 1\nThis is line 2\nThis is line 3";
-
-        /*
-        1) Insère j\t line = "1\tThis is line 1\nThis is line 2\nThis is line 3"
-        2) Decoupe la string -> line = "This is line 2\nThis is line 3"
-        3) Recherche \n -> et insère j\t après ->  line = "This is line 2\nThis is line 3"
-        */
-
         StringBuilder tmp;
         tmp = new StringBuilder(str);
         tmp.append("\n");
@@ -65,26 +56,19 @@ public class FileNumberingFilterWriter extends FilterWriter {
         if (!str.isEmpty()) {
             result.append(str);
         }
-
+        System.out.println(result.toString());
         super.write(result.toString(), 0, result.toString().length());
     }
 
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
-        throw new UnsupportedOperationException("The student has not implemented this method yet.");
+        // Source : https://stackoverflow.com/questions/7655127/how-to-convert-a-char-array-back-to-a-string
+        this.write(new String(cbuf), off, len);
     }
 
     @Override
     public void write(int c) throws IOException {
-        //throw new UnsupportedOperationException("The student has not implemented this method yet.");
-        /*
-        1) Insert counter
-        2) looping and detecting \r or \n
-        3) If it's \r, verify the char after, if it's \n then we must insert counter after \n
-        */
         StringBuilder result = new StringBuilder();
-        i++;
-
 
         if (j == 1) {
             super.write(j++ + "\t" + (char) c);
@@ -111,6 +95,12 @@ public class FileNumberingFilterWriter extends FilterWriter {
                 super.write('\t');
 
                 return;
+            } else {
+                charBeforeWasCtrl = false;
+
+                super.write(String.valueOf(j++));
+                super.write('\t');
+                super.write((char) c);
             }
         } else {
             super.write((char) c);
