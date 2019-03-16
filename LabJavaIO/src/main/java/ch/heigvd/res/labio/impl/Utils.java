@@ -31,26 +31,24 @@ public class Utils {
 
         if (m.find()) {
             // Source : https://www.tutorialspoint.com/java/java_string_split.htm
+            // When I found a control character I split the string and work on that part only, and so on until the end.
             for (String s : lines.split("\n|\r\n|\r")) {
-                StringBuilder test = new StringBuilder(s);
+                StringBuilder tmp = new StringBuilder(s);
 
-                System.out.println(i);
-                System.out.println(s);
-
+                // Three different cases for the three OS
                 if (lines.contains("\r\n")) {
-                    result[i++] = test.append("\r\n").toString();
+                    result[i++] = tmp.append("\r\n").toString();
                 } else if (lines.contains("\n")) {
-                    result[i++] = test.append("\n").toString();
+                    result[i++] = tmp.append("\n").toString();
                 } else if (lines.contains("\r")) {
-                    result[i++] = test.append("\r").toString();
+                    result[i++] = tmp.append("\r").toString();
                 }
             }
         } else {
+            // If there is only one line (no control character), we must put the line in the second index of the array.
             result[1] = lines;
         }
 
-
         return result;
     }
-
 }

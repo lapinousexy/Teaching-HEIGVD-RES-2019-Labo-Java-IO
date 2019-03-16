@@ -79,6 +79,7 @@ public class Application implements IApplication {
         }
     }
 
+    // TODO : Add commentary, JavaDoc style
     @Override
     public void fetchAndStoreQuotes(int numberOfQuotes) throws IOException {
         clearOutputDirectory();
@@ -154,6 +155,7 @@ public class Application implements IApplication {
                     writer.flush();
                     writer.close();
                 } catch (IOException e) {
+                    // TODO : Print the error, is that a good way ?
                     System.out.println(e);
                 }
             }

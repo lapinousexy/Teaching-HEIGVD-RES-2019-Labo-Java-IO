@@ -20,25 +20,25 @@ import java.util.regex.Pattern;
 public class FileNumberingFilterWriter extends FilterWriter {
 
     private static final Logger LOG = Logger.getLogger(FileNumberingFilterWriter.class.getName());
-    private int j = 1;
+    private int countCharacter = 1;
     boolean charBeforeWasCtrl = false;
 
     public FileNumberingFilterWriter(Writer out) {
         super(out);
     }
 
+    // TODO : Write commentary for this fonction, and maybe optimize ?
     @Override
     public void write(String str, int off, int len) throws IOException {
-        StringBuilder tmp;
-        tmp = new StringBuilder(str);
+        StringBuilder tmp = new StringBuilder(str);
         tmp.append("\n");
         str = tmp.substring(off, off + len);
 
         StringBuilder result = new StringBuilder();
 
-        if (j == 1) {
+        if (countCharacter == 1) {
             tmp = new StringBuilder(str);
-            tmp.insert(0, j++);
+            tmp.insert(0, countCharacter++);
             tmp.insert(1, '\t');
             str = tmp.toString();
         }
@@ -48,8 +48,8 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
         while (m.find()) {
             result = result.append(str.substring(0, m.end()));
-            str = new String(str.substring(m.end(), str.length()));
-            result.append(j++ + "\t");
+            str = str.substring(m.end(), str.length());
+            result.append(countCharacter++ + "\t");
             m = newLine.matcher(str);
         }
 
@@ -68,43 +68,41 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
     @Override
     public void write(int c) throws IOException {
-        StringBuilder result = new StringBuilder();
-
-        if (j == 1) {
-            super.write(j++ + "\t" + (char) c);
+        /* I first write a "1 \t" at the beginning of the "String", only if I'm reading the first char of the sequence.
+         * Then I need to make a difference between different cases with the help of a boolean.
+         */
+        if (countCharacter == 1) {
+            super.write(countCharacter++ + "\t" + (char) c);
             return;
         }
 
         if (c == '\n' && !charBeforeWasCtrl) {
             super.write('\n');
-            super.write(String.valueOf(j++));
+            super.write(String.valueOf(countCharacter++));
             super.write('\t');
-            return;
         } else if (c == '\r') {
             charBeforeWasCtrl = true;
             super.write((char) c);
-            return;
         } else if (charBeforeWasCtrl) {
-
+            /* If the character before was a "\r", then we need to check if the actual character is a "\n" or an actual
+             * character. If a "\n" we must write it first and then write "count \t", but if it's another character we
+             * must write it at the end.
+             */
             if (c == '\n') {
-                //System.out.println("i: " + i + " j = " + j + " Result : " + result.toString() + " Original :" + (char) c);
-                charBeforeWasCtrl = false;
-
                 super.write('\n');
-                super.write(String.valueOf(j++));
+                super.write(String.valueOf(countCharacter++));
                 super.write('\t');
-
-                return;
             } else {
-                charBeforeWasCtrl = false;
-
-                super.write(String.valueOf(j++));
+                super.write(String.valueOf(countCharacter++));
                 super.write('\t');
                 super.write((char) c);
             }
+
+            charBeforeWasCtrl = false;
+
         } else {
+            // Normal cases
             super.write((char) c);
-            return;
         }
 
     }

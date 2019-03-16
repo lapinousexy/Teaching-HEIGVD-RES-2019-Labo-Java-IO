@@ -18,8 +18,13 @@ public class DFSFileExplorer implements IFileExplorer {
 
     @Override
     public void explore(File rootDirectory, IFileVisitor vistor) {
+        /* So basically I begin by visiting the actual "object" and then I put the list of all "object"
+         * (directory or file) inside an array, before sorting it (I saw that we need to sort on the Telegram discussion)
+         * I check if it's null (which is the case when the directory is empty), and then I need to check whether it's a
+         * folder or a file, the case is different because I need to visit files (and not explore them) and I need to
+         * call the function recursively for folder.
+         */
         vistor.visit(rootDirectory);
-
         File[] fileList = rootDirectory.listFiles();
 
         if (fileList != null) {

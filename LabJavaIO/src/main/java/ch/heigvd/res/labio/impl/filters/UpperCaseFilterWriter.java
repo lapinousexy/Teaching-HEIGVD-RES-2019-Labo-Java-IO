@@ -21,10 +21,8 @@ public class UpperCaseFilterWriter extends FilterWriter {
 
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
-        for (int i = off; i < off + len; ++i) {
-            cbuf[i] = Character.toUpperCase(cbuf[i]);
-        }
-        super.write(cbuf, off, len);
+        // Source : https://stackoverflow.com/questions/7655127/how-to-convert-a-char-array-back-to-a-string
+        super.write(new String(cbuf).toUpperCase(), off, len);
     }
 
     @Override
