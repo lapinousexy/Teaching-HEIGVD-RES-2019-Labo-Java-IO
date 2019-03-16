@@ -21,21 +21,25 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
     private static final Logger LOG = Logger.getLogger(FileNumberingFilterWriter.class.getName());
     private int countCharacter = 1;
-    boolean charBeforeWasCtrl = false;
+    private boolean charBeforeWasCtrl = false;
 
     public FileNumberingFilterWriter(Writer out) {
         super(out);
     }
 
-    // TODO : Write commentary for this fonction, and maybe optimize ?
     @Override
-    public void write(String str, int off, int len) throws IOException {
+    public void write(String str, int off, int len) throws IOException, IllegalArgumentException {
+        if (off > str.length() || off < 0 || len > str.length() || len < 0 || off + len > str.length()) {
+            throw new IllegalArgumentException();
+        }
+
         StringBuilder tmp = new StringBuilder(str);
         tmp.append("\n");
         str = tmp.substring(off, off + len);
 
         StringBuilder result = new StringBuilder();
 
+        // At the beginning of the String I put "count \t".
         if (countCharacter == 1) {
             tmp = new StringBuilder(str);
             tmp.insert(0, countCharacter++);
@@ -43,9 +47,13 @@ public class FileNumberingFilterWriter extends FilterWriter {
             str = tmp.toString();
         }
 
+        // I was inspired by the test for the Application classes, I used Pattern and Matcher classes too.
         Pattern newLine = Pattern.compile("\n|\r\n|\r");
         Matcher m = newLine.matcher(str);
 
+        /* I'm searching for sequence or singleton of control character and then I extract the substring and I put
+         * "count \t" at the end of the String, and I continue until no other sequence are found.
+         */
         while (m.find()) {
             result = result.append(str.substring(0, m.end()));
             str = str.substring(m.end(), str.length());
@@ -53,10 +61,12 @@ public class FileNumberingFilterWriter extends FilterWriter {
             m = newLine.matcher(str);
         }
 
+        // If the string doesn't finish with a control character I'm just appending it to the result.
         if (!str.isEmpty()) {
             result.append(str);
         }
-        System.out.println(result.toString());
+
+        // Since we cut the string at the beginning, there is no need to worry about offset, we write all of the result.
         super.write(result.toString(), 0, result.toString().length());
     }
 
@@ -97,9 +107,7 @@ public class FileNumberingFilterWriter extends FilterWriter {
                 super.write('\t');
                 super.write((char) c);
             }
-
             charBeforeWasCtrl = false;
-
         } else {
             // Normal cases
             super.write((char) c);

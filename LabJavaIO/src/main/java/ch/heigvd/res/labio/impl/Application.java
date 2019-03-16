@@ -79,7 +79,6 @@ public class Application implements IApplication {
         }
     }
 
-    // TODO : Add commentary, JavaDoc style
     @Override
     public void fetchAndStoreQuotes(int numberOfQuotes) throws IOException {
         clearOutputDirectory();
@@ -130,11 +129,8 @@ public class Application implements IApplication {
                 path += tag + "/";
                 new File(path).mkdirs();
             }
-            System.out.println(path + filename);
             new File(path + filename).createNewFile();
         } catch (IOException e) {
-            System.out.println(e);
-
             throw new IOException();
         }
 
@@ -149,13 +145,11 @@ public class Application implements IApplication {
         explorer.explore(new File(WORKSPACE_DIRECTORY), new IFileVisitor() {
             @Override
             public void visit(File file) {
-
                 try {
                     writer.write(file.getPath() + "\n");
                     writer.flush();
                     writer.close();
                 } catch (IOException e) {
-                    // TODO : Print the error, is that a good way ?
                     System.out.println(e);
                 }
             }
