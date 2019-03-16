@@ -127,9 +127,10 @@ public class Application implements IApplication {
                 new File(path).mkdirs();
             }
             new File(path + filename).createNewFile();
-            FileWriter test = new FileWriter(path + filename);
-            test.write(quote.getQuote());
-            test.close();
+
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(path + filename));
+            fileWriter.write(quote.getQuote());
+            fileWriter.close();
         } catch (IOException e) {
             throw new IOException();
         }
