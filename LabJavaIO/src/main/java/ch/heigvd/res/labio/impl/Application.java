@@ -8,10 +8,7 @@ import ch.heigvd.res.labio.interfaces.IFileVisitor;
 import ch.heigvd.res.labio.quotes.QuoteClient;
 import ch.heigvd.res.labio.quotes.Quote;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -130,6 +127,9 @@ public class Application implements IApplication {
                 new File(path).mkdirs();
             }
             new File(path + filename).createNewFile();
+            FileWriter test = new FileWriter(path + filename);
+            test.write(quote.getQuote());
+            test.close();
         } catch (IOException e) {
             throw new IOException();
         }
